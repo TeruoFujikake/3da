@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Three.js Bubble Animation</title>
+  <link rel="stylesheet" href="css/destyle.css">
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Three.js -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.162.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.162.0/examples/jsm/",
+        "gsap": "https://cdn.jsdelivr.net/npm/gsap@3.12.5/+esm"
+      }
+    }
+  </script>
+
+  <script type="module" src="js/mainVisualText.js"></script>
+  <script type="module" src="js/background-three.js"></script>
+  <script type="module" src="js/modelPlaneArea-three.js"></script>
+  <script type="module" src="js/modelMonkeyArea-three.js"></script>
+  <script type="module" src="js/modelChildArea-three.js"></script>
+  <script src="js/main.js" defer></script>
+</head>
+<body>
+  <!-- ローディング画面 -->
+  <div id="loading" class="loading">
+    <div class="loading__gearArea">
+      <!-- 青いギア -->
+      <svg class="loading__gear one" viewBox="0 0 100 100">
+          <path d="M97.6,55.7V44.3l-13.6-2.9c-0.8-3.3-2.1-6.4-3.9-9.3l7.6-11.7l-8-8L67.9,20c-2.9-1.7-6-3.1-9.3-3.9L55.7,2.4H44.3
+          l-2.9,13.6c-3.3,0.8-6.4,2.1-9.3,3.9l-11.7-7.6l-8,8L20,32.1c-1.7,2.9-3.1,6-3.9,9.3L2.4,44.3v11.4l13.6,2.9c0.8,3.3,2.1,6.4,3.9,9.3
+          l-7.6,11.7l8,8L32.1,80c2.9,1.7,6,3.1,9.3,3.9l2.9,13.6h11.4l2.9-13.6c3.3-0.8,6.4-2.1,9.3-3.9l11.7,7.6l8-8L80,67.9
+          c1.7-2.9,3.1-6,3.9-9.3L97.6,55.7z M50,65.6c-8.7,0-15.6-7-15.6-15.6s7-15.6,15.6-15.6s15.6,7,15.6,15.6S58.7,65.6,50,65.6z"/>
+      </svg>
+  
+      <!-- ピンクのギア -->
+      <svg class="loading__gear two" viewBox="0 0 100 100">
+          <path d="M97.6,55.7V44.3l-13.6-2.9c-0.8-3.3-2.1-6.4-3.9-9.3l7.6-11.7l-8-8L67.9,20c-2.9-1.7-6-3.1-9.3-3.9L55.7,2.4H44.3
+          l-2.9,13.6c-3.3,0.8-6.4,2.1-9.3,3.9l-11.7-7.6l-8,8L20,32.1c-1.7,2.9-3.1,6-3.9,9.3L2.4,44.3v11.4l13.6,2.9c0.8,3.3,2.1,6.4,3.9,9.3
+          l-7.6,11.7l8,8L32.1,80c2.9,1.7,6,3.1,9.3,3.9l2.9,13.6h11.4l2.9-13.6c3.3-0.8,6.4-2.1,9.3-3.9l11.7,7.6l8-8L80,67.9
+          c1.7-2.9,3.1-6,3.9-9.3L97.6,55.7z M50,65.6c-8.7,0-15.6-7-15.6-15.6s7-15.6,15.6-15.6s15.6,7,15.6,15.6S58.7,65.6,50,65.6z"/>
+      </svg>
+  
+      <!-- 黄色のギア -->
+      <svg class="loading__gear three" viewBox="0 0 100 100">
+          <path d="M97.6,55.7V44.3l-13.6-2.9c-0.8-3.3-2.1-6.4-3.9-9.3l7.6-11.7l-8-8L67.9,20c-2.9-1.7-6-3.1-9.3-3.9L55.7,2.4H44.3
+          l-2.9,13.6c-3.3,0.8-6.4,2.1-9.3,3.9l-11.7-7.6l-8,8L20,32.1c-1.7,2.9-3.1,6-3.9,9.3L2.4,44.3v11.4l13.6,2.9c0.8,3.3,2.1,6.4,3.9,9.3
+          l-7.6,11.7l8,8L32.1,80c2.9,1.7,6,3.1,9.3,3.9l2.9,13.6h11.4l2.9-13.6c3.3-0.8,6.4-2.1,9.3-3.9l11.7,7.6l8-8L80,67.9
+          c1.7-2.9,3.1-6,3.9-9.3L97.6,55.7z M50,65.6c-8.7,0-15.6-7-15.6-15.6s7-15.6,15.6-15.6s15.6,7,15.6,15.6S58.7,65.6,50,65.6z"/>
+      </svg>
+      <div class="loading__circle"></div>
+    </div>
+    <div class="loading__textArea">
+      <p class="loading__text">Loading</p>
+      <p class="loading__progress">0%</p>
+    </div>
+  </div>
+
+  <div id="background"></div>
+
+  <header class="header">
+    <a href="#" class="header__logo">
+      <img class="header__logo-3" src="img/3.png" alt="3">
+      <img class="header__logo-D" src="img/D.png" alt="D">
+      <img class="header__logo-A" src="img/A.png" alt="A">
+    </a>
+
+    <a href="javascript:void(0)" class="header__hamburger" id="header__hamburger">
+      <div class="header__hamburger-area">
+        <span class="header__hamburger-bar">
+          <span class="header__hamburger-bar-line"></span>
+        </span>
+        <span class="header__hamburger-bar">
+          <span class="header__hamburger-bar-line"></span>
+        </span>
+        <span class="header__hamburger-bar">
+          <span class="header__hamburger-bar-line"></span>
+        </span>
+      </div>
+    </a>
+
+    <div id="header__menu" class="header__menu">
+      <ul class="header__menu-list">
+        <li class="header__menu-item">
+          <a href="#" class="header__menu-link">ホーム</a>
+        </li>
+        <li class="header__menu-item">
+          <a href="#" class="header__menu-link">セクション1</a>
+        </li>
+        <li class="header__menu-item">
+          <a href="#" class="header__menu-link">セクション2</a>
+        </li>
+        <li class="header__menu-item">
+          <a href="#" class="header__menu-link">お問い合わせ</a>
+        </li>
+      </ul>
+    </div>
+  </header>
+
+  <div class="container">
+    <section class="js-section content mainVisual is-show">
+      <h1 id="mainVisualTextArea" class="mainVisualTextArea">
+        <p class="mainVisualText__text">Main Visual Text</p>
+      </h1>
+    </section>
+
+    <section class="js-section content">
+      <div class="textArea">
+        <h2 class="textArea__title">セクション 1</h2>
+        <p class="textArea__text">テキスト テキスト テキスト テキスト テキスト テキスト テキスト テキスト</p>
+      </div>
+      <div id="modelPlaneArea" class="modelPlaneArea"></div>
+
+    </section>
+    <section class="js-section content">
+      <div class="textArea">
+        <h2 class="textArea__title">セクション 2</h2>
+        <p class="textArea__text">テキスト テキスト テキスト テキスト テキスト テキスト テキスト テキスト</p>
+      </div>
+
+      <div id="modelMonkeyArea" class="modelMonkeyArea"></div>
+    </section>
+    <section class="js-section content">
+      <div class="textArea">
+        <h2 class="textArea__title">セクション 3</h2>
+        <p class="textArea__text">テキスト テキスト テキスト テキスト テキスト テキスト テキスト テキスト</p>
+      </div>
+
+      <div id="modelChildArea" class="modelChildArea"></div>
+    </section>
+    <section class="js-section content footer">
+      <div class="footer__content">
+        <div class="footer__logo">
+          <img class="footer__logo-img" src="img/3.png" alt="3">
+          <img class="footer__logo-img" src="img/D.png" alt="D">
+          <img class="footer__logo-img" src="img/A.png" alt="A">
+        </div>
+        <div class="footer__links">
+          <div class="footer__column">
+            <h3 class="footer__title">メニュー</h3>
+            <ul class="footer__list">
+              <li><a href="#" class="footer__link">ホーム</a></li>
+              <li><a href="#" class="footer__link">セクション1</a></li>
+              <li><a href="#" class="footer__link">セクション2</a></li>
+              <li><a href="#" class="footer__link">セクション3</a></li>
+            </ul>
+          </div>
+          <div class="footer__column">
+            <h3 class="footer__title">お問い合わせ</h3>
+            <ul class="footer__list">
+              <li><a href="mailto:info@example.com" class="footer__link">メール</a></li>
+              <li><a href="tel:0123456789" class="footer__link">電話</a></li>
+            </ul>
+          </div>
+          <div class="footer__column">
+            <h3 class="footer__title">SNS</h3>
+            <ul class="footer__list">
+              <li><a href="#" class="footer__link">Twitter</a></li>
+              <li><a href="#" class="footer__link">Instagram</a></li>
+              <li><a href="#" class="footer__link">Facebook</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer__bottom">
+          <p class="footer__copyright">&copy; 2024 3DA All Rights Reserved.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="scrollLine">
+    <span class="scrollLine__text">SCROLL</span>
+    <div class="scrollLine__line"></div>
+  </div>
+  
+</body>
+</html>
