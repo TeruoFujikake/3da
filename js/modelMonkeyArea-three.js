@@ -37,16 +37,18 @@ rgbeLoader.load('model/monkey/texture/golden_bay_2k.hdr', function (texture) {
 
 // モデルのロード
 const loader = new GLTFLoader();
+
+let modelTop, modelBottom;
+
 loader.load('model/monkey/scene.gltf', function (gltf) {
-    const model = gltf.scene;
+    modelTop = gltf.scene;
 
     // モデルのスケールと位置を調整
-    model.scale.set(3, 3, 3);
-    model.position.set(0, 0, 0);
-
+    modelTop.scale.set(3, 3, 3);
+    modelTop.position.set(0, 2, 0); // 上に配置
 
     // マテリアルのMetalnessとRoughnessを設定（反射を強くする）
-    model.traverse((child) => {
+    modelTop.traverse((child) => {
         if (child.isMesh) {
             child.material.metalness = 1.0; // 完全な金属
             child.material.roughness = 0.1; // 反射をはっきり
@@ -55,16 +57,34 @@ loader.load('model/monkey/scene.gltf', function (gltf) {
         }
     });
 
-    scene.add(model);
-
-    // アニメーション
-    function animate() {
-        requestAnimationFrame(animate);
-        model.rotation.y += 0.005; // ゆっくりと回転
-        renderer.render(scene, camera);
-    }
-    animate();
+    scene.add(modelTop);
 });
+
+loader.load('model/see-no-evil_monkey/scene.gltf', function (gltf) {
+    modelBottom = gltf.scene;
+    modelBottom.scale.set(3, 3, 3);
+    modelBottom.position.set(0, -2, 0); // 下に配置
+
+    modelBottom.traverse((child) => {
+        if (child.isMesh) {
+            child.material.metalness = 1.0;
+            child.material.roughness = 0.1;
+            child.material.envMap = scene.environment;
+            child.material.needsUpdate = true;
+        }
+    });
+
+    scene.add(modelBottom);
+});
+
+// アニメーション
+function animate() {
+    requestAnimationFrame(animate);
+    if (modelTop) modelTop.rotation.y += 0.005; // ゆっくりと回転
+    if (modelBottom) modelBottom.rotation.y -= 0.005;
+    renderer.render(scene, camera);
+}
+animate();
 
 // ウィンドウリサイズ対応
 window.addEventListener('resize', onWindowResize, false);

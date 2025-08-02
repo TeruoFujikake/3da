@@ -108,7 +108,7 @@
       </h1>
     </section>
 
-    <section class="js-section content">
+    <section class="js-section content content01">
       <div class="textAreaWrapper">
         <div class="textArea">
           <h2 class="textArea__title">Fighter character</h2>
@@ -119,18 +119,18 @@
       <div id="modelPlaneArea" class="modelPlaneArea"></div>
     </section>
 
-    <section class="js-section content">
+    <section class="js-section content content01">
       <div class="textAreaWrapper">
         <div class="textArea">
           <h2 class="textArea__title">Reflective Character</h2>
-          <p class="textArea__text">「技術 × 表現」で<br>見る人の心を動かすインタラクションを</p>
+          <p class="textArea__text">「技術 × 表現」で<br>見る人の心を動かす<br class="onlySP">インタラクションを</p>
         </div>
       </div>
 
       <div id="modelMonkeyArea" class="modelMonkeyArea"></div>
     </section>
 
-    <section class="js-section content">
+    <section class="js-section content content01">
       <div class="textAreaWrapper">
         <div class="textArea">
           <h2 class="textArea__title">3D moving characters</h2>
@@ -142,41 +142,25 @@
     </section>
 
     <section class="js-section content footer">
-      <div class="footer__content">
-        <div class="footer__logo">
-          <img class="footer__logo-img" src="img/3.png" alt="3">
-          <img class="footer__logo-img" src="img/D.png" alt="D">
-          <img class="footer__logo-img" src="img/A.png" alt="A">
-        </div>
-        <div class="footer__links">
-          <div class="footer__column">
-            <h3 class="footer__title">メニュー</h3>
-            <ul class="footer__list">
-              <li><a href="#" class="footer__link">ホーム</a></li>
-              <li><a href="#" class="footer__link">セクション1</a></li>
-              <li><a href="#" class="footer__link">セクション2</a></li>
-              <li><a href="#" class="footer__link">セクション3</a></li>
-            </ul>
-          </div>
-          <div class="footer__column">
-            <h3 class="footer__title">お問い合わせ</h3>
-            <ul class="footer__list">
-              <li><a href="mailto:info@example.com" class="footer__link">メール</a></li>
-              <li><a href="tel:0123456789" class="footer__link">電話</a></li>
-            </ul>
-          </div>
-          <div class="footer__column">
-            <h3 class="footer__title">SNS</h3>
-            <ul class="footer__list">
-              <li><a href="#" class="footer__link">Twitter</a></li>
-              <li><a href="#" class="footer__link">Instagram</a></li>
-              <li><a href="#" class="footer__link">Facebook</a></li>
-            </ul>
-          </div>
-        </div>
-        <div class="footer__bottom">
-          <p class="footer__copyright">&copy; 2024 3DA All Rights Reserved.</p>
-        </div>
+      <form class="contact-form" name="contact" method="POST" data-netlify="true">
+        <input type="hidden" name="form-name" value="contact" />
+        <label>
+          Name
+          <input type="text" name="name" required />
+        </label>
+        <label>
+          Email
+          <input type="email" name="email" required />
+        </label>
+        <label>
+          Message
+          <textarea name="message" rows="5" required></textarea>
+        </label>
+        <button type="submit">送信</button>
+      </form>
+
+      <div class="footer__bottom">
+        <p class="footer__copyright">&copy; 2024 3DA All Rights Reserved.</p>
       </div>
     </section>
   </div>
