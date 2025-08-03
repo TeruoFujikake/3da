@@ -5,12 +5,12 @@ import { gsap } from "gsap";
 // シーン作成
 const scene = new THREE.Scene();
 
-// オブジェクトエリアの要素を取得
+// オブジェクトエリア取得
 const modelPlaneArea = document.getElementById("modelPlaneArea");
 const modelPlaneAreaWidth = modelPlaneArea.clientWidth;
 const modelPlaneAreaHeight = modelPlaneArea.clientHeight;
 
-// カメラ設定
+// カメラ
 const camera = new THREE.PerspectiveCamera(
   75,
   modelPlaneAreaWidth / modelPlaneAreaHeight,
@@ -19,79 +19,125 @@ const camera = new THREE.PerspectiveCamera(
 );
 camera.position.set(0, 0, 10);
 
-// レンダラー設定
+// レンダラー
 const renderer = new THREE.WebGLRenderer({
   antialias: true,
-  alpha: true, // 背景を透明に
+  alpha: true,
 });
 renderer.setSize(modelPlaneAreaWidth, modelPlaneAreaHeight);
-renderer.setClearColor(0x000000, 0); // 背景を完全に透明に
+renderer.setClearColor(0x000000, 0);
 modelPlaneArea.appendChild(renderer.domElement);
 
-// ライティング設定
+// ライティング
 const ambientLight = new THREE.AmbientLight(0xffffff, 7);
 scene.add(ambientLight);
 
-let model; // モデルをグローバルに保持
+// モデルとラッパー
+let model;
+let modelWrapper;
+let animationFinished = false;
 
-// モデルのロード
+// モデル読み込み
 const loader = new GLTFLoader();
 loader.load("model/plane/scene.gltf", function (gltf) {
   model = gltf.scene;
-  resetModelPosition(); // 初期位置に設定
-  scene.add(model);
 
-  // 継続的な回転アニメーション
-  function animate() {
-    requestAnimationFrame(animate);
-    if (model) {
-      model.rotation.y += 0.005; // ゆっくりと回転
-    }
-    renderer.render(scene, camera);
-  }
+model.rotation.set(Math.PI / 2, Math.PI / 2, -Math.PI / 2); // ←ここでモデル本体に回転を設定
+
+  modelWrapper = new THREE.Group();
+  modelWrapper.add(model);
+
+  resetModelPosition();
+  scene.add(modelWrapper);
+
   animate();
 });
 
-// モデルを初期位置に戻す関数
+// 初期位置リセット
 function resetModelPosition() {
-  if (!model) return;
-  model.scale.set(0.2, 0.2, 0.2);
-  model.position.set(5, 0, -20);
+  if (!modelWrapper) return;
+  modelWrapper.scale.set(0.2, 0.2, 0.2);
+  modelWrapper.position.set(5, 2, -20);
+  modelWrapper.quaternion.identity(); // 向きリセット（アニメーションのため）
 }
 
-// モデルのアニメーションを開始する関数
+// アニメーション開始
 function startModelAnimation() {
-  if (!model) return;
+  if (!modelWrapper) return;
 
-  // 一度初期位置に戻す
   resetModelPosition();
+  animationFinished = false;
 
-  // アニメーションを開始
-  gsap
-    .timeline()
-    .to(model.position, {
-      x: 0, // 中央へ
-      z: 0, // 手前へ
-      duration: 2.5,
-      ease: "power2.out",
-    })
-    .to(
-      model.scale,
-      {
-        x: 0.7, // 最終的な大きさ
-        y: 0.7,
-        z: 0.7,
-        duration: 2.5,
-        ease: "power2.out",
-      },
-      "<"
-    );
+  const duration = 5;
+  const fps = 60;
+  const totalFrames = duration * fps;
+  let frame = 0;
+
+  const curve = new THREE.CatmullRomCurve3(
+    [
+      new THREE.Vector3(5, 2, -20),
+      new THREE.Vector3(3, -1, -15),
+      new THREE.Vector3(-2, 2, -8),
+      new THREE.Vector3(0, 0, 0),
+    ],
+    false,
+    "centripetal"
+  );
+
+  const targetScale = new THREE.Vector3(0.7, 0.7, 0.7);
+
+  const move = () => {
+    if (!modelWrapper) return;
+
+    const t = frame / totalFrames;
+    const position = curve.getPoint(t);
+    const tangent = curve.getTangent(t);
+
+    modelWrapper.position.copy(position);
+
+    const lookTarget = position.clone().add(tangent);
+    const targetQuaternion = new THREE.Quaternion();
+    modelWrapper.lookAt(lookTarget);
+    targetQuaternion.copy(modelWrapper.quaternion);
+
+    modelWrapper.quaternion.slerp(targetQuaternion, 0.1);
+
+    frame++;
+    if (frame <= totalFrames) {
+      requestAnimationFrame(move);
+    } else {
+      animationFinished = true;
+    }
+  };
+
+  move();
+
+  // スケール補間
+  gsap.to(modelWrapper.scale, {
+    x: targetScale.x,
+    y: targetScale.y,
+    z: targetScale.z,
+    duration: duration,
+    ease: "power2.out",
+  });
 }
 
-// セクション切り替えを監視
+// レンダリングループ
+function animate() {
+  requestAnimationFrame(animate);
+
+  if (modelWrapper && animationFinished) {
+    modelWrapper.rotation.y += 0.005;
+  }
+
+  renderer.render(scene, camera);
+}
+
+// セクション監視
 const planeSection = document
   .querySelector("#modelPlaneArea")
   .closest(".js-section");
+
 const observer = new MutationObserver((mutations) => {
   mutations.forEach((mutation) => {
     if (mutation.type === "attributes" && mutation.attributeName === "class") {
@@ -101,14 +147,12 @@ const observer = new MutationObserver((mutations) => {
     }
   });
 });
-
 observer.observe(planeSection, {
   attributes: true,
 });
 
-// ウィンドウリサイズ対応
+// リサイズ対応
 window.addEventListener("resize", onWindowResize, false);
-
 function onWindowResize() {
   const newWidth = modelPlaneArea.clientWidth;
   const newHeight = modelPlaneArea.clientHeight;

@@ -397,6 +397,12 @@ header__menu
   transition-delay: 2.4s;
 }
 
+.header__menu-list.is-active .header__menu-item:nth-of-type(5) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 2.7s;
+}
+
 .header__menu-item + .header__menu-item {
   margin-top: 20px;
 }
