@@ -43,7 +43,9 @@
     }
   });
 
-  // スマホ用スワイプ操作
+  /**
+   * スマホ用スワイプ操作 / ↓↓↓ここから↓↓↓
+   */
   let touchStartY = 0;
   let touchEndY = 0;
   const swipeThreshold = 50; // スワイプ判定のしきい値（px）
@@ -76,6 +78,9 @@
       }
     }
   });
+  /**
+   * スマホ用スワイプ操作 / ↑↑↑ここまで↑↑↑
+   */
 
   // キーボード操作 (上下キー)
   window.addEventListener('keydown', (e) => {
