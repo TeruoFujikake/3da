@@ -54,6 +54,14 @@
     }
   });
 
+  // 縦(上)方向に大きく動いた場合はデフォルト動作（ブラウザのリロード）を防ぐ
+  window.addEventListener('touchmove', (e) => {
+    const currentY = e.touches[0].clientY;
+    if (Math.abs(touchStartY - currentY) > swipeThreshold) {
+      e.preventDefault();
+    }
+  }, { passive: false }); // { passive: false }を指定しないと、preventDefault()が効きません。
+
   window.addEventListener('touchend', (e) => {
     touchEndY = e.changedTouches[0].clientY;
     const diffY = touchStartY - touchEndY;
