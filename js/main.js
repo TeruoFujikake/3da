@@ -43,6 +43,32 @@
     }
   });
 
+  // スマホ用スワイプ操作
+  let touchStartY = 0;
+  let touchEndY = 0;
+  const swipeThreshold = 50; // スワイプ判定のしきい値（px）
+
+  window.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) {
+      touchStartY = e.touches[0].clientY;
+    }
+  });
+
+  window.addEventListener('touchend', (e) => {
+    touchEndY = e.changedTouches[0].clientY;
+    const diffY = touchStartY - touchEndY;
+
+    if (Math.abs(diffY) > swipeThreshold) {
+      if (diffY > 0) {
+        // 上にスワイプ → 次のセクション
+        switchSection(currentSectionIndex + 1);
+      } else {
+        // 下にスワイプ → 前のセクション
+        switchSection(currentSectionIndex - 1);
+      }
+    }
+  });
+
   // キーボード操作 (上下キー)
   window.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowDown') {
